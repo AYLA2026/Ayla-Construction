@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("user")
+  accounts      Account[]
+  sessions      Session[]
+  auditLogs     AuditLog[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Villa {
+  id          String   @id @default(cuid())
+  name        String
+  location    String?
+  status      String   @default("متوفر")
+  price       Float?
+  area        Float?
+  rooms       Int?
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Contractor {
+  id       String @id @default(cuid())
+  name     String
+  type     String @default("مقاول")
+  phone    String?
+  email    String?
+  address  String?
+  specialty String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Contract {
+  id          String   @id @default(cuid())
+  title       String
+  contractor  String?
+  value       Float?
+  startDate   DateTime?
+  endDate     DateTime?
+  status      String   @default("نشط")
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Budget {
+  id          String   @id @default(cuid())
+  category    String
+  allocated   Float    @default(0)
+  spent       Float    @default(0)
+  remaining   Float    @default(0)
+  project     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Statement {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   @default("صرف")
+  amount      Float    @default(0)
+  date        DateTime?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Timeline {
+  id          String   @id @default(cuid())
+  title       String
+  startDate   DateTime?
+  endDate     DateTime?
+  progress    Int      @default(0)
+  status      String   @default("قيد التنفيذ")
+  project     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Permit {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   @default("بناء")
+  issueDate   DateTime?
+  expiryDate  DateTime?
+  status      String   @default("ساري")
+  fileUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Correspondence {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   @default("وارد")
+  fromTo      String?
+  date        DateTime?
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  title       String
+  category    String   @default("عام")
+  fileUrl     String?
+  date        DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Gallery {
+  id          String   @id @default(cuid())
+  title       String
+  category    String   @default("عام")
+  imageUrl    String?
+  date        DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Inventory {
+  id          String   @id @default(cuid())
+  name        String
+  quantity    Int      @default(0)
+  unit        String   @default("قطعة")
+  location    String?
+  minLevel    Int      @default(10)
+  status      String   @default("متوفر")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Handover {
+  id          String   @id @default(cuid())
+  villaName   String
+  clientName  String?
+  handoverDate DateTime?
+  status      String   @default("قيد التحضير")
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   @default("شهري")
+  period      String?
+  fileUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  details   String?  @db.Text
+  userId    String?
+  userEmail String?
+  userName  String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+}

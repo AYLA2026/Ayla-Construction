@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .ayla-input {
+    @apply w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-right
+           focus:outline-none focus:ring-2 focus:ring-ayla-gold/50 focus:border-ayla-gold
+           transition-all duration-200;
+  }
+  .ayla-btn {
+    @apply px-5 py-2.5 rounded-lg bg-ayla-gold text-white font-medium
+           hover:bg-ayla-gold/90 active:scale-[0.98]
+           transition-all duration-200 shadow-sm;
+  }
+  .ayla-btn-secondary {
+    @apply px-5 py-2.5 rounded-lg bg-white text-gray-700 border border-gray-200 font-medium
+           hover:bg-gray-50 active:scale-[0.98]
+           transition-all duration-200;
+  }
+  .ayla-card {
+    @apply bg-white rounded-xl border border-ayla-border p-5 shadow-sm;
+  }
+}
